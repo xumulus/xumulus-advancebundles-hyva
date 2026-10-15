@@ -565,6 +565,38 @@
             }
         }
 
+        /* ---------------------------------------------------------------- wish list */
+
+        /**
+         * Hyvä's "Add to Wish List" button copies the product form into URLSearchParams with set(), which keeps one
+         * value per name, so of `bundle_option[7][]` only the last checkbox would reach the wish list. For that one
+         * click the multi-select names get their selection id as key (`bundle_option[7][19]`, which the server
+         * reads the same way) and are put back on the next task. Runs in the capture phase, before Hyvä's handler
+         * builds its request.
+         */
+        function onWishlistClick(event) {
+            var renamed = [];
+
+            if (!closest(event.target, '[data-addto="wishlist"]') || !form) {
+                return;
+            }
+            Array.prototype.forEach.call(root.querySelectorAll('input[name$="[]"]'), function (input) {
+                var name = input.getAttribute('name');
+
+                if (input.value !== '' && /^bundle_option\[[^\]]+\]\[\]$/.test(name)) {
+                    input.setAttribute('name', name.slice(0, -2) + '[' + input.value + ']');
+                    renamed.push([input, name]);
+                }
+            });
+            if (renamed.length) {
+                win.setTimeout(function () {
+                    renamed.forEach(function (entry) {
+                        entry[0].setAttribute('name', entry[1]);
+                    });
+                }, 0);
+            }
+        }
+
         /* ---------------------------------------------------------------- start */
 
         function onChange(detail) {
@@ -592,6 +624,7 @@
         }
         if (form) {
             listen(form, 'submit', onSubmit, true);
+            listen(doc, 'click', onWishlistClick, true);
         }
         root.setAttribute('data-xab-started', 'hyva');
 
