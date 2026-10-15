@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Unit suite for Xumulus_AdvanceBundlesHyva. Repository-only, not shipped.
+
+    Run against a Magento install with Hyvä (PHPUnit 10.5, 11 or 12):
+          XAB_AUTOLOAD=/path/to/magento/vendor/autoload.php /path/to/magento/vendor/bin/phpunit -c phpunit.xml.dist
+-->
+<phpunit bootstrap="dev/ci/phpunit-bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">Test/Unit</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

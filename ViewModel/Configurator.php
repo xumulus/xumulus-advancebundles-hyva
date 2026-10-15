@@ -100,7 +100,7 @@ class Configurator implements ArgumentInterface
     }
 
     /**
-     * getStartPrices() as JSON, for a data attribute.
+     * The start prices (getStartPrices()) as JSON, for a data attribute.
      *
      * @param Product $product
      * @return string

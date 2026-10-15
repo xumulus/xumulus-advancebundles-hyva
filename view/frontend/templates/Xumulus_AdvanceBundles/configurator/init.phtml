@@ -19,8 +19,9 @@ use Xumulus\AdvanceBundlesHyva\ViewModel\Configurator as HyvaConfigurator;
 
 /** @var HyvaConfigurator $hyvaConfigurator */
 $hyvaConfigurator = $viewModels->require(HyvaConfigurator::class);
+$startPrices = $hyvaConfigurator->getStartPricesJson($block->getProduct());
 ?>
 <script type="application/json"
         data-xab-config
-        data-xab-hyva-prices="<?= $escaper->escapeHtmlAttr($hyvaConfigurator->getStartPricesJson($block->getProduct())) ?>"
+        data-xab-hyva-prices="<?= $escaper->escapeHtmlAttr($startPrices) ?>"
 ><?= /* @noEscape */ $xabViewModel->getConfigJson($block) ?></script>
