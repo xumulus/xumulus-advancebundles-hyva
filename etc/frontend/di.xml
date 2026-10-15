@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Registers this module as the Hyvä compatibility module of Xumulus_AdvanceBundles: on a Hyvä theme, templates of
+ * Xumulus_AdvanceBundles are looked up in view/frontend/templates/Xumulus_AdvanceBundles/ of this module first, and
+ * `bin/magento hyva:config:generate` adds this module to app/etc/hyva-themes.json, so the theme's Tailwind build
+ * includes view/frontend/tailwind/tailwind-source.css and scans the templates.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Hyva\CompatModuleFallback\Model\CompatModuleRegistry">
+        <arguments>
+            <argument name="compatModules" xsi:type="array">
+                <item name="xumulus_advancebundles_hyva" xsi:type="array">
+                    <item name="original_module" xsi:type="string">Xumulus_AdvanceBundles</item>
+                    <item name="compat_module" xsi:type="string">Xumulus_AdvanceBundlesHyva</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>
