@@ -1,0 +1,1059 @@
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Xumulus Advanced Bundles on Hyvä: the configurator's styles.
+ *
+ * Merged into the theme's styles.css by the theme's Tailwind build: `bin/magento hyva:config:generate` lists this
+ * module in app/etc/hyva-themes.json (it is a registered compatibility module) and `npm run build` imports this file
+ * (Tailwind v4: `hyva-sources`; Tailwind v3: `postcssImportHyvaModules`). Plain CSS on purpose, so the same file
+ * works with both Tailwind versions.
+ *
+ * The markup is the main module's (BEM classes under .xab, state in data-xab-* attributes, see
+ * docs/configurator-contract.md §6.3 there), so these are the rules of its Luma style sheet (_module.less) ported to
+ * Hyvä: the same CSS custom properties on .xab, set from the Hyvä theme's design tokens where it has them, sizes in
+ * Hyvä's 16px rem, and the page arrangement (.xab-hyva*) for Hyvä's product page. Everything is in the components
+ * layer, so Tailwind utility classes still win.
+ */
+
+@layer components {
+    .xab {
+        --xab-accent: var(--color-primary, #1979c3);
+        --xab-accent-contrast: var(--color-on-primary, #fff);
+        --xab-text: var(--color-fg, #1f2937);
+        --xab-muted: var(--color-fg-secondary, #4b5563);
+        --xab-border: var(--color-gray-300, #d1d5db);
+        --xab-divider: var(--color-gray-300, #d1d5db);
+        --xab-surface: var(--color-surface, #fff);
+        --xab-surface-alt: var(--color-bg, #f8fafc);
+        --xab-heading-bg: var(--color-bg, #f8fafc);
+        --xab-selected: var(--color-secondary, #15803d);
+        --xab-error: var(--color-red-600, #dc2626);
+        --xab-radius: var(--radius-lg, 0.5rem);
+        --xab-gap: 1rem;
+        --xab-touch: 2.75rem;
+        --xab-thumb-max: 5rem;
+        --xab-gallery-columns: 4;
+        --xab-sticky-top: 1.25rem;
+        --xab-price: var(--xab-accent);
+    }
+
+    .xab--gallery-2 { --xab-gallery-columns: 2; }
+    .xab--gallery-3 { --xab-gallery-columns: 3; }
+    .xab--gallery-4 { --xab-gallery-columns: 4; }
+
+    .xab-visually-hidden,
+    .xab .xab-card__input {
+        border: 0;
+        clip: rect(0, 0, 0, 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+    }
+
+    /* ------------------------------------------------------------------ page arrangement (Hyvä) */
+
+    .xab-hyva {
+        width: 100%;
+    }
+
+    .xab-hyva #product_addtocart_form {
+        margin: 0;
+    }
+
+    .xab-hyva__columns {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "options" "summary";
+    }
+
+    .xab-hyva__columns > .xab-options {
+        grid-area: options;
+    }
+
+    .xab-hyva__columns > .xab-summary {
+        grid-area: summary;
+    }
+
+    @media (min-width: 768px) {
+        .xab-hyva__columns {
+            align-items: start;
+            gap: 2rem;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            grid-template-areas: "options summary";
+        }
+
+        .xab-hyva__columns:has(> .xab-summary--align-left) {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+            grid-template-areas: "summary options";
+        }
+
+        .xab-hyva__columns > .xab-summary {
+            position: sticky;
+            top: var(--xab-sticky-top);
+        }
+    }
+
+    /* ------------------------------------------------------------------ options */
+
+    .xab-options {
+        color: var(--xab-text);
+    }
+
+    .xab .xab-option {
+        border: 0;
+        margin: 0 0 var(--xab-gap);
+        min-width: 0;
+        padding: 0;
+    }
+
+    .xab .xab-option__legend {
+        border: 0;
+        float: left;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .xab .xab-option__legend + * {
+        clear: both;
+    }
+
+    .xab .xab-option__heading {
+        align-items: center;
+        display: flex;
+        font-size: 1.125rem;
+        font-weight: 600;
+        gap: 0.25rem;
+        margin: 0 0 0.625rem;
+    }
+
+    .xab .xab-option__required,
+    .xab .xab-custom__required {
+        color: var(--xab-error);
+        font-size: 0.875rem;
+    }
+
+    .xab .xab-option__toggle {
+        align-items: center;
+        background: none;
+        border: 0;
+        color: inherit;
+        cursor: pointer;
+        display: flex;
+        flex: 1 1 auto;
+        font: inherit;
+        justify-content: space-between;
+        min-height: var(--xab-touch);
+        padding: 0;
+        text-align: left;
+    }
+
+    .xab .xab-option__toggle::after {
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 7px solid var(--xab-muted);
+        content: '';
+        margin-left: 0.625rem;
+        transition: transform .2s;
+    }
+
+    .xab .xab-option__toggle[aria-expanded='false']::after {
+        transform: rotate(-90deg);
+    }
+
+    .xab .xab-option__toggle:focus-visible,
+    .xab .xab-selection__details:focus-visible,
+    .xab .xab-summary__remove:focus-visible,
+    .xab .xab-dialog__close:focus-visible,
+    .xab .xab-selection__desc-toggle:focus-visible {
+        outline: 2px solid var(--xab-accent);
+        outline-offset: 2px;
+    }
+
+    .xab .xab-option__body {
+        clear: both;
+    }
+
+    .xab .xab-option__body[hidden] {
+        display: none;
+    }
+
+    .xab .xab-option__cms {
+        margin-bottom: 0.625rem;
+    }
+
+    .xab .xab-option[data-xab-invalid='true'] .xab-option__heading {
+        color: var(--xab-error);
+    }
+
+    .xab .xab-error {
+        color: var(--xab-error);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .xab .xab-error[hidden] {
+        display: none;
+    }
+
+    /* Rows (radio, checkbox) */
+
+    .xab .xab-option__list {
+        border-top: 1px solid var(--xab-divider);
+    }
+
+    .xab .xab-selection--row {
+        border-bottom: 1px solid var(--xab-divider);
+        padding: 0.625rem 0;
+    }
+
+    .xab .xab-selection__main {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.625rem;
+    }
+
+    .xab .xab-selection__media {
+        flex: 0 0 auto;
+        line-height: 0;
+        max-width: var(--xab-thumb-max);
+    }
+
+    .xab .xab-selection__media img {
+        border-radius: calc(var(--xab-radius) / 2);
+        height: auto;
+        max-width: 100%;
+    }
+
+    .xab--images-right .xab-selection--row .xab-selection__media {
+        order: 10;
+    }
+
+    .xab .xab-selection__control {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+        min-height: var(--xab-touch);
+        min-width: 1.5rem;
+    }
+
+    .xab .xab-selection__control input {
+        margin: 0;
+    }
+
+    .xab .xab-selection__label {
+        cursor: pointer;
+        flex: 1 1 0;
+        min-height: 1.5rem;
+        min-width: 0;
+        padding: 0.25rem 0;
+    }
+
+    .xab .xab-selection--none .xab-selection__label {
+        flex-basis: auto;
+    }
+
+    .xab .xab-selection__price,
+    .xab .xab-selection__price .price {
+        font-weight: 600;
+    }
+
+    .xab .xab-selection__link {
+        color: var(--xab-accent);
+        text-decoration: underline;
+    }
+
+    .xab .xab-selection__details {
+        background: none;
+        border: 1px solid transparent;
+        border-radius: var(--xab-radius);
+        cursor: pointer;
+        flex: 0 0 auto;
+        height: var(--xab-touch);
+        margin-left: auto;
+        padding: 0;
+        position: relative;
+        width: var(--xab-touch);
+    }
+
+    /* A magnifier, drawn with CSS. */
+    .xab .xab-selection__details::before {
+        border: 2px solid var(--xab-muted);
+        border-radius: 50%;
+        content: '';
+        height: 0.75rem;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-65%, -65%);
+        width: 0.75rem;
+    }
+
+    .xab .xab-selection__details::after {
+        background: var(--xab-muted);
+        content: '';
+        height: 0.4375rem;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(0.25rem, 0.1rem) rotate(-45deg);
+        width: 2px;
+    }
+
+    .xab .xab-selection__details:hover {
+        border-color: var(--xab-border);
+    }
+
+    .xab .xab-qty {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .xab .xab-qty__label {
+        font-weight: 600;
+    }
+
+    .xab .xab-qty__input {
+        min-height: var(--xab-touch);
+        text-align: center;
+        width: 5rem;
+    }
+
+    .xab .xab-qty__input[disabled] {
+        opacity: .5;
+    }
+
+    .xab .xab-option > .xab-option__body > .xab-qty {
+        margin-top: 0.625rem;
+    }
+
+    /* Custom options (engraving text) */
+
+    .xab .xab-selection__custom {
+        margin: 0.5rem 0 0;
+    }
+
+    .xab .xab-selection[data-xab-selected='false'] .xab-selection__custom {
+        display: none;
+    }
+
+    .xab .xab-custom {
+        margin-bottom: 0.5rem;
+    }
+
+    .xab .xab-custom__label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .xab .xab-custom__input {
+        min-height: var(--xab-touch);
+        width: 100%;
+    }
+
+    .xab .xab-custom__input[aria-invalid='true'] {
+        border-color: var(--xab-error);
+    }
+
+    .xab .xab-custom__note {
+        color: var(--xab-muted);
+        font-size: 0.875rem;
+        margin: 0.25rem 0 0;
+    }
+
+    .xab .xab-custom__counter:not(:empty)::before {
+        content: '(';
+    }
+
+    .xab .xab-custom__counter:not(:empty)::after {
+        content: ')';
+    }
+
+    /* Short descriptions */
+
+    .xab .xab-selection__desc-toggle {
+        background: none;
+        border: 0;
+        color: var(--xab-accent);
+        cursor: pointer;
+        font-size: 0.875rem;
+        margin: 0.375rem 0 0;
+        min-height: 1.5rem;
+        padding: 0;
+    }
+
+    .xab .xab-selection__desc-toggle::after {
+        content: ' +';
+    }
+
+    .xab .xab-selection__desc-toggle[aria-expanded='true']::after {
+        content: ' \2212';
+    }
+
+    .xab .xab-selection__desc {
+        font-size: 0.875rem;
+        margin: 0.375rem 0 0;
+    }
+
+    .xab .xab-selection__desc[hidden] {
+        display: none;
+    }
+
+    .xab .xab-selection[data-xab-selected='false'] .xab-selection__desc--on-select {
+        display: none;
+    }
+
+    /* Drop-downs */
+
+    .xab .xab-filter {
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .xab .xab-filter::before {
+        border: 2px solid var(--xab-muted);
+        border-radius: 50%;
+        content: '';
+        height: 0.625rem;
+        left: 0.75rem;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-60%);
+        width: 0.625rem;
+    }
+
+    .xab .xab-filter__input {
+        min-height: var(--xab-touch);
+        padding-left: 2.25rem;
+        width: 100%;
+    }
+
+    .xab .xab-select {
+        min-height: var(--xab-touch);
+        width: 100%;
+    }
+
+    .xab .xab-select--multi {
+        height: auto;
+    }
+
+    .xab .xab-option__panels .xab-selection--panel {
+        margin-top: 0.625rem;
+    }
+
+    .xab .xab-option__panels .xab-selection--panel[data-xab-selected='false'] {
+        display: none;
+    }
+
+    .xab .xab-selection--panel .xab-selection__name {
+        color: var(--xab-muted);
+        flex: 1 1 auto;
+    }
+
+    /* Gallery cards */
+
+    .xab .xab-gallery {
+        display: grid;
+        gap: 0.625rem;
+        grid-template-columns: repeat(var(--xab-gallery-columns), minmax(0, 1fr));
+    }
+
+    .xab .xab-selection--card {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .xab .xab-card {
+        background: var(--xab-surface);
+        border: 2px solid var(--xab-border);
+        border-radius: var(--xab-radius);
+        cursor: pointer;
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .xab .xab-card__media {
+        align-items: center;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .xab .xab-card__media img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .xab .xab-card__caption {
+        background: #374151;
+        color: #fff;
+        font-size: 0.875rem;
+        min-height: 2.5rem;
+        padding: 0.375rem 2.5rem 0.375rem 0.5rem;
+    }
+
+    .xab .xab-card__caption .price,
+    .xab .xab-card__caption .product-name {
+        color: inherit;
+    }
+
+    .xab .xab-card__check {
+        display: none;
+    }
+
+    .xab .xab-card__details {
+        bottom: 0;
+        position: absolute;
+        right: 0;
+    }
+
+    .xab .xab-card__details::before {
+        border-color: #fff;
+    }
+
+    .xab .xab-card__details::after {
+        background: #fff;
+    }
+
+    .xab .xab-card__details:focus-visible {
+        box-shadow: 0 0 0 4px var(--xab-accent);
+        outline: 2px solid #fff;
+        outline-offset: 0;
+    }
+
+    .xab .xab-selection--card[data-xab-selected='true'] .xab-card {
+        border-color: var(--xab-selected);
+        box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+    }
+
+    .xab .xab-selection--card[data-xab-selected='true'] .xab-card__caption {
+        background: #111827;
+    }
+
+    .xab .xab-selection--card[data-xab-selected='true'] .xab-card__check {
+        background: var(--xab-selected);
+        border-bottom-left-radius: var(--xab-radius);
+        display: block;
+        height: 1.75rem;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 1.75rem;
+    }
+
+    .xab .xab-selection--card[data-xab-selected='true'] .xab-card__check::after {
+        border: solid #fff;
+        border-width: 0 3px 3px 0;
+        content: '';
+        height: 0.8125rem;
+        left: 0.625rem;
+        position: absolute;
+        top: 0.25rem;
+        transform: rotate(45deg);
+        width: 0.4375rem;
+    }
+
+    .xab .xab-card__input:focus-visible + .xab-card__media {
+        outline: 2px solid var(--xab-accent);
+        outline-offset: -4px;
+    }
+
+    .xab .xab-selection--card[data-xab-selected='false'] .xab-qty {
+        visibility: hidden;
+    }
+
+    .xab .xab-selection--card .xab-qty,
+    .xab .xab-selection--card .xab-selection__custom {
+        margin-top: 0.375rem;
+    }
+
+    .xab .xab-selection--none {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+        min-height: var(--xab-touch);
+    }
+
+    /* ------------------------------------------------------------------ dialogs (native <dialog>) */
+
+    .xab .xab-dialog {
+        background: var(--xab-surface);
+        border: 0;
+        border-radius: var(--xab-radius);
+        box-shadow: 0 5px 30px rgba(0, 0, 0, .35);
+        color: var(--xab-text);
+        margin: auto;
+        max-height: 90vh;
+        max-width: min(760px, 92vw);
+        padding: 0;
+        width: 100%;
+    }
+
+    .xab .xab-dialog::backdrop {
+        background: rgba(0, 0, 0, .45);
+    }
+
+    .xab .xab-dialog__header {
+        align-items: center;
+        border-bottom: 1px solid var(--xab-border);
+        display: flex;
+        justify-content: space-between;
+        padding: 0.875rem 1.25rem;
+    }
+
+    .xab .xab-dialog__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .xab .xab-dialog__close {
+        background: none;
+        border: 0;
+        cursor: pointer;
+        height: var(--xab-touch);
+        position: relative;
+        width: var(--xab-touch);
+    }
+
+    .xab .xab-dialog__close::before,
+    .xab .xab-dialog__close::after {
+        background: var(--xab-muted);
+        content: '';
+        height: 2px;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        width: 1.25rem;
+    }
+
+    .xab .xab-dialog__close::before {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .xab .xab-dialog__close::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .xab .xab-dialog__body {
+        display: grid;
+        gap: 1.25rem;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+        padding: 1.25rem;
+    }
+
+    .xab .xab-dialog__gallery {
+        display: flex;
+        gap: 0.625rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+    }
+
+    .xab .xab-dialog__gallery img {
+        flex: 0 0 100%;
+        height: auto;
+        max-width: 100%;
+        object-fit: contain;
+        scroll-snap-align: center;
+    }
+
+    .xab .xab-dialog__desc {
+        font-size: 0.9375rem;
+    }
+
+    .xab .xab-dialog__link a {
+        color: var(--xab-accent);
+        text-decoration: underline;
+    }
+
+    .xab .xab-dialog__footer {
+        align-items: center;
+        border-top: 1px solid var(--xab-border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.625rem;
+        justify-content: flex-end;
+        padding: 0.875rem 1.25rem;
+    }
+
+    /* The shared dialog template's buttons carry Luma's classes; give them Hyvä's button look. */
+    .xab .xab-dialog__footer .action {
+        align-items: center;
+        border: 2px solid transparent;
+        border-radius: var(--radius-lg, 0.5rem);
+        cursor: pointer;
+        display: inline-flex;
+        font-weight: 500;
+        justify-content: center;
+        min-height: var(--xab-touch);
+        padding: 0.5rem 1rem;
+    }
+
+    .xab .xab-dialog__footer .action.primary {
+        background: var(--xab-accent);
+        color: var(--xab-accent-contrast);
+    }
+
+    .xab .xab-dialog__footer .action.secondary {
+        background: var(--xab-surface);
+        border-color: var(--xab-border);
+        color: var(--xab-text);
+    }
+
+    .xab .xab-dialog__selected {
+        color: var(--xab-selected);
+        display: none;
+        font-weight: 600;
+        margin: 0 auto 0 0;
+    }
+
+    .xab [data-xab-selected='true'] .xab-dialog__select {
+        display: none;
+    }
+
+    .xab [data-xab-selected='true'] .xab-dialog__selected {
+        display: block;
+    }
+
+    .xab .xab-dialog__errors {
+        color: var(--xab-error);
+        list-style: disc;
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .xab .xab-dialog--errors .xab-dialog__body {
+        display: block;
+    }
+
+    /* ------------------------------------------------------------------ summary */
+
+    .xab.xab-summary {
+        background: var(--xab-surface);
+        border: 1px solid var(--xab-border);
+        border-radius: var(--xab-radius);
+        box-sizing: border-box;
+        color: var(--xab-text);
+    }
+
+    .xab .xab-summary__title {
+        border-bottom: 1px solid var(--xab-border);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        padding: 0.875rem 1.25rem;
+    }
+
+    .xab .xab-summary__body {
+        padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .xab .xab-summary__list,
+    .xab .xab-summary__items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .xab .xab-summary__group {
+        border-bottom: 1px solid var(--xab-divider);
+        margin: 0 0 0.625rem;
+        padding: 0 0 0.5rem;
+    }
+
+    .xab .xab-summary__option {
+        display: block;
+        font-weight: 600;
+    }
+
+    .xab .xab-summary__line {
+        align-items: baseline;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 0.625rem;
+        margin: 0.25rem 0 0;
+        padding-right: var(--xab-touch);
+        position: relative;
+    }
+
+    .xab .xab-summary__name {
+        flex: 1 1 auto;
+    }
+
+    .xab .xab-summary__custom {
+        color: var(--xab-muted);
+        flex: 1 0 100%;
+        font-size: 0.875rem;
+    }
+
+    .xab .xab-summary__remove {
+        background: none;
+        border: 0;
+        cursor: pointer;
+        height: var(--xab-touch);
+        padding: 0;
+        position: absolute;
+        right: 0;
+        top: -0.625rem;
+        width: var(--xab-touch);
+    }
+
+    .xab .xab-summary__remove::before {
+        background: #9ca3af;
+        border-radius: 50%;
+        content: '';
+        height: 1.125rem;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 1.125rem;
+    }
+
+    .xab .xab-summary__remove::after {
+        color: #fff;
+        content: '\00d7';
+        font-size: 0.875rem;
+        left: 50%;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -55%);
+    }
+
+    .xab .xab-summary__remove:hover::before,
+    .xab .xab-summary__remove:focus-visible::before {
+        background: var(--xab-muted);
+    }
+
+    .xab .xab-summary__empty {
+        color: var(--xab-muted);
+    }
+
+    .xab .xab-summary__total {
+        display: flex;
+        font-weight: 600;
+        justify-content: space-between;
+        margin: 0.625rem 0;
+    }
+
+    /* Hyvä's price box shows the total; the summary's own total is for scripts (and for a summary without it). */
+    .xab.xab-summary:has(.xab-summary__actions .price-box) .xab-summary__total {
+        display: none;
+    }
+
+    .xab .xab-summary__errors {
+        background: #fef2f2;
+        border-radius: calc(var(--xab-radius) / 2);
+        color: var(--xab-error);
+        margin: 0.625rem 0;
+        padding: 0.625rem 0.75rem;
+    }
+
+    .xab .xab-summary__errors[hidden] {
+        display: none;
+    }
+
+    .xab .xab-summary__errors ul {
+        list-style: disc;
+        margin: 0.375rem 0 0;
+        padding-left: 1.125rem;
+    }
+
+    .xab .xab-summary__errors p {
+        margin: 0;
+    }
+
+    .xab .xab-summary__price .price-box {
+        margin: 0.75rem 0;
+    }
+
+    .xab .xab-summary__price .price {
+        color: var(--xab-price);
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+
+    .xab .xab-summary__cart {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .xab .xab-summary__cart #product-addtocart-button {
+        flex: 1 1 auto;
+        min-height: var(--xab-touch);
+    }
+
+    .xab .xab-summary__tier,
+    .xab .xab-summary__shortcuts {
+        margin-top: 0.75rem;
+    }
+
+    /* ------------------------------------------------------------------ Xumulus presentation */
+
+    .xab--layout-xumulus .xab-option {
+        border: 1px solid var(--xab-border);
+        border-radius: var(--xab-radius);
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+    }
+
+    .xab--layout-xumulus .xab-option__heading {
+        background: var(--xab-heading-bg);
+        border-bottom: 1px solid var(--xab-border);
+        font-size: 1.125rem;
+        margin: 0;
+        padding: 0.25rem 1rem;
+    }
+
+    .xab--layout-xumulus .xab-option__body {
+        padding: 0.625rem 1rem;
+    }
+
+    .xab--layout-xumulus .xab-option__list {
+        border-top: 0;
+    }
+
+    .xab--layout-xumulus .xab-selection--row:last-child {
+        border-bottom: 0;
+    }
+
+    .xab--layout-xumulus .xab-selection__price .price {
+        color: var(--xab-accent);
+    }
+
+    .xab--layout-xumulus .xab-card__caption .xab-selection__price .price {
+        color: inherit;
+    }
+
+    .xab-header {
+        border: 1px solid var(--xab-border);
+        border-radius: var(--xab-radius);
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .xab-header__title {
+        background: var(--xab-heading-bg);
+        font-size: 1.25rem;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+    }
+
+    .xab-header__content,
+    .xab-header__description {
+        padding: 1rem;
+    }
+
+    /* ------------------------------------------------------------------ phones */
+
+    @media (max-width: 767px) {
+        .xab .xab-gallery {
+            grid-auto-columns: 70%;
+            grid-auto-flow: column;
+            grid-template-columns: none;
+            overflow-x: auto;
+            padding-bottom: 0.375rem;
+            scroll-snap-type: x mandatory;
+        }
+
+        .xab .xab-gallery > .xab-selection {
+            scroll-snap-align: start;
+        }
+
+        .xab .xab-dialog__body {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        /*
+         * Xumulus layout with "Show Summary in Mobile View" off: the summary list is hidden, and the price and the
+         * add-to-cart button become a bar fixed to the bottom of the screen. The page keeps room for it.
+         */
+        body:has(.xab-summary--mobile-bar) {
+            padding-bottom: var(--xab-mobile-bar-height, 5.5rem);
+        }
+
+        .xab.xab-summary--mobile-bar {
+            background: none;
+            border: 0;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__title,
+        .xab.xab-summary--mobile-bar .xab-summary__lines {
+            display: none;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__body {
+            padding: 0;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__actions {
+            align-items: center;
+            background: var(--xab-accent);
+            bottom: 0;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, .2);
+            color: var(--xab-accent-contrast);
+            display: flex;
+            gap: 0.625rem;
+            justify-content: space-between;
+            left: 0;
+            padding: 0.375rem 0.75rem;
+            position: fixed;
+            right: 0;
+            z-index: 20;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__price .price-box {
+            margin: 0;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__price .price {
+            color: var(--xab-accent-contrast);
+            font-size: 1.25rem;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__cart {
+            flex: 0 1 auto;
+        }
+
+        .xab.xab-summary--mobile-bar .xab-summary__cart input[name='qty'],
+        .xab.xab-summary--mobile-bar .xab-summary__cart label[for^='qty'] {
+            display: none;
+        }
+    }
+}
+
+/*
+ * Outside the components layer on purpose: Hyvä's button is styled by the btn/btn-primary utilities, which a
+ * components-layer rule cannot override. In the phone bar the button turns light on the accent background.
+ */
+@media (max-width: 767px) {
+    .xab.xab-summary--mobile-bar .xab-summary__cart #product-addtocart-button {
+        --btn-bg: var(--xab-accent-contrast);
+        --btn-color: var(--xab-accent);
+        --btn-hover-bg: var(--xab-accent-contrast);
+        --btn-hover-color: var(--xab-accent);
+        --btn-active-bg: var(--xab-accent-contrast);
+        --btn-active-color: var(--xab-accent);
+        background-color: var(--xab-accent-contrast);
+        color: var(--xab-accent);
+        min-width: 3.5rem;
+    }
+}
