@@ -185,3 +185,25 @@ test('amd-hide.js / amd-restore.js do nothing without an AMD loader', () => {
     });
     assert.deepEqual(Object.keys(sandbox).sort(), ['self']);
 });
+
+test('tailwind.config.js keeps every rule of tailwind-source.css in a Tailwind v3 build (safelist)', () => {
+    // Tailwind v3 drops @layer components rules whose classes are not in the scanned content, and the configurator's
+    // markup is the main module's templates, some classes built in PHP. Each class the style sheet uses has to be
+    // safelisted.
+    const dir = path.resolve(__dirname, '../../view/frontend/tailwind');
+    const config = require(path.join(dir, 'tailwind.config.js'));
+    const css = fs.readFileSync(path.join(dir, 'tailwind-source.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const classes = new Set((css.match(/\.-?[A-Za-z_][\w-]*/g) || []).map((s) => s.slice(1)));
+    const patterns = (config.safelist || []).map((entry) => (entry instanceof RegExp ? entry : entry.pattern));
+    const kept = (name) => patterns.some((pattern) => pattern instanceof RegExp && pattern.test(name)) ||
+        (config.safelist || []).includes(name);
+
+    // The classes the main module builds in PHP (ViewModel\Configurator) and its header template.
+    ['xab--layout-xumulus', 'xab--gallery-3', 'xab--images-right', 'xab-header__title'].forEach((name) => {
+        assert.ok(kept(name), name);
+    });
+    assert.ok(classes.size > 50, 'the style sheet was read');
+    const missing = [...classes].filter((name) => /^xab/.test(name) && !kept(name));
+
+    assert.deepEqual(missing, []);
+});
