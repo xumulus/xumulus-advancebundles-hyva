@@ -248,9 +248,10 @@
         margin: 0;
     }
 
+    /* At least 9rem for the name: on phones the qty and details button wrap below it instead of squeezing it. */
     .xab .xab-selection__label {
         cursor: pointer;
-        flex: 1 1 0;
+        flex: 1 1 9rem;
         min-height: 1.5rem;
         min-width: 0;
         padding: 0.25rem 0;
