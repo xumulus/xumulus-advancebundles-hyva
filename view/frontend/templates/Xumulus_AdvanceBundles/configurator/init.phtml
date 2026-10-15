@@ -7,6 +7,8 @@
  * the configurator root. Instead of Luma's x-magento-init it leaves the config (docs/configurator-contract.md §3)
  * as JSON data for the Alpine component "xabConfigurator" (Xumulus_AdvanceBundlesHyva::hyva/configurator.phtml),
  * with the price Hyvä's bundle price box starts from. Data only: no script runs here, so nothing needs a CSP hash.
+ * data-xab-config-for names the root: Magento's "Move JS code to the bottom of the page" (dev/js/move_script_to_bottom)
+ * moves this element out of the root to the end of <body>, and the adapter finds it there by that id.
  *
  * @var \Magento\Bundle\Block\Catalog\Product\View\Type\Bundle $block
  * @var \Magento\Framework\Escaper $escaper
@@ -23,5 +25,6 @@ $startPrices = $hyvaConfigurator->getStartPricesJson($block->getProduct());
 ?>
 <script type="application/json"
         data-xab-config
+        data-xab-config-for="<?= $escaper->escapeHtmlAttr($xabRootId) ?>"
         data-xab-hyva-prices="<?= $escaper->escapeHtmlAttr($startPrices) ?>"
 ><?= /* @noEscape */ $xabViewModel->getConfigJson($block) ?></script>

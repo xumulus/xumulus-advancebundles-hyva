@@ -138,6 +138,32 @@
     }
 
     /**
+     * The config element of a configurator root: <script type="application/json" data-xab-config> (init.phtml).
+     *
+     * It is rendered inside the root, but Magento's "Move JS code to the bottom of the page"
+     * (dev/js/move_script_to_bottom, Magento\Theme\Controller\Result\JsFooterPlugin, which Hyvä keeps on product
+     * pages) moves every <script> element to the end of <body>, this one too. So it is looked up by the root's id
+     * (data-xab-config-for) anywhere in the document first, then inside the root.
+     *
+     * @param {Element} root the [data-xab-root] element
+     * @returns {Element|null}
+     */
+    function findConfigElement(root) {
+        var doc = root.ownerDocument,
+            id = root.getAttribute('id'),
+            candidates = id ? doc.querySelectorAll('script[data-xab-config-for]') : [],
+            i;
+
+        for (i = 0; i < candidates.length; i++) {
+            if (candidates[i].getAttribute('data-xab-config-for') === id) {
+                return candidates[i];
+            }
+        }
+
+        return root.querySelector('script[data-xab-config]');
+    }
+
+    /**
      * Start the adapter on one configurator root.
      *
      * @param {Element} root the [data-xab-root] element
@@ -149,7 +175,7 @@
             doc = root.ownerDocument,
             win = doc.defaultView || global,
             core = opts.core || win.XabConfigurator,
-            configEl = root.querySelector('script[data-xab-config]'),
+            configEl = findConfigElement(root),
             config = opts.config || parse(configEl ? configEl.textContent : null),
             priceStart = opts.start || parse(configEl ? configEl.getAttribute('data-xab-hyva-prices') : null) || {},
             form,
@@ -168,6 +194,11 @@
             instance;
 
         if (!config) {
+            if (win.console) {
+                win.console.warn('Xumulus Advanced Bundles: no configurator config found for #' +
+                    (root.getAttribute('id') || '[data-xab-root]') + '; the bundle configurator is not started.');
+            }
+
             return null;
         }
         if (!core || typeof core.create !== 'function') {
@@ -743,6 +774,7 @@
         PRICE_EVENT: PRICE_EVENT,
         format: format,
         priceEventDetail: priceEventDetail,
+        findConfigElement: findConfigElement,
         start: start,
         component: component
     };

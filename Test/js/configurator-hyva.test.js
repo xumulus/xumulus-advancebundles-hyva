@@ -78,3 +78,66 @@ test('Hyvä price box shows exactly the core total, for every store fixture', {s
             Math.round(price.totals.finalPrice.final * 100) / 100, configFile);
     });
 });
+
+/**
+ * A minimal DOM for the config lookup: elements with attributes, a document and a root that only know the
+ * selectors findConfigElement() uses.
+ */
+function fakeElement(attrs) {
+    return {
+        getAttribute: (name) => (Object.prototype.hasOwnProperty.call(attrs, name) ? attrs[name] : null),
+        hasAttribute: (name) => Object.prototype.hasOwnProperty.call(attrs, name),
+    };
+}
+
+function fakePage(rootId, inRoot, elsewhere) {
+    const doc = {
+        querySelectorAll: (selector) => {
+            assert.equal(selector, 'script[data-xab-config-for]');
+
+            return inRoot.concat(elsewhere).filter((el) => el.hasAttribute('data-xab-config-for'));
+        },
+        defaultView: {console: {warn: (message) => warnings.push(message)}},
+    };
+    const warnings = [];
+    const root = Object.assign(fakeElement(rootId ? {id: rootId} : {}), {
+        ownerDocument: doc,
+        querySelector: (selector) => {
+            assert.equal(selector, 'script[data-xab-config]');
+
+            return inRoot[0] || null;
+        },
+    });
+
+    return {root, warnings};
+}
+
+test('findConfigElement(): the config inside the root (the page as rendered)', () => {
+    const config = fakeElement({'data-xab-config': '', 'data-xab-config-for': 'xab-root-2046'});
+    const {root} = fakePage('xab-root-2046', [config], []);
+
+    assert.equal(adapter.findConfigElement(root), config);
+});
+
+test('findConfigElement(): the config moved to the end of <body> (dev/js/move_script_to_bottom)', () => {
+    const other = fakeElement({'data-xab-config': '', 'data-xab-config-for': 'xab-root-46'});
+    const config = fakeElement({'data-xab-config': '', 'data-xab-config-for': 'xab-root-2046'});
+    const {root} = fakePage('xab-root-2046', [], [other, config]);
+
+    assert.equal(adapter.findConfigElement(root), config, 'the config of this root, not another bundle\'s');
+});
+
+test('findConfigElement(): a theme template without data-xab-config-for still works inside the root', () => {
+    const config = fakeElement({'data-xab-config': ''});
+
+    assert.equal(adapter.findConfigElement(fakePage('xab-root-2046', [config], []).root), config);
+    assert.equal(adapter.findConfigElement(fakePage(null, [config], []).root), config);
+});
+
+test('start() warns and does nothing when there is no config', () => {
+    const {root, warnings} = fakePage('xab-root-2046', [], []);
+
+    assert.equal(adapter.start(root, {core: {create: () => assert.fail('must not start')}}), null);
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /no configurator config found for #xab-root-2046/);
+});
