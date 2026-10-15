@@ -1,0 +1,74 @@
+{
+    "name": "xumulus/advancebundles-hyva-ci",
+    "description": "CI-only toolchain for Xumulus_AdvanceBundlesHyva: its Magento dependencies from the Mage-OS mirror, the Xumulus packages it builds on from dev/ci/deps/ (checked out by CI), and PHPUnit. Never shipped. \"require\" must match the module's composer.json; dev/ci/install.sh checks. The Hyvä packages come from Hyvä's public GitHub repositories; their Mollie theme bundle is replaced (not needed by the tests).",
+    "type": "project",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repositories": {
+        "mage-os": {
+            "type": "composer",
+            "url": "https://mirror.mage-os.org/",
+            "only": [
+                "magento/*"
+            ]
+        },
+        "main": {
+            "type": "path",
+            "url": "deps/main",
+            "options": {
+                "symlink": true
+            }
+        },
+        "magento2-theme-module": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-theme-module.git"
+        },
+        "magento2-compat-module-fallback": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-compat-module-fallback.git"
+        },
+        "magento2-base-layout-reset": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-base-layout-reset.git"
+        },
+        "magento2-email-module": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-email-module.git"
+        },
+        "magento2-order-cancellation-webapi": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-order-cancellation-webapi.git"
+        },
+        "magento2-default-theme": {
+            "type": "git",
+            "url": "https://github.com/hyva-themes/magento2-default-theme.git"
+        }
+    },
+    "require": {
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0||~8.5.0",
+        "magento/framework": "^103.0.7",
+        "magento/module-bundle": "^101.0.7",
+        "magento/module-catalog": "^104.0.7",
+        "hyva-themes/magento2-theme-module": "^1.3.11",
+        "hyva-themes/magento2-compat-module-fallback": "^1.1",
+        "xumulus/xumulus-advancebundles": "^2.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5 || ^11.5 || ^12.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "audit": {
+            "block-insecure": false
+        },
+        "allow-plugins": {
+            "laminas/laminas-dependency-plugin": false,
+            "magento/*": false,
+            "php-http/discovery": false
+        }
+    },
+    "replace": {
+        "hyva-themes/magento2-mollie-theme-bundle": "*"
+    }
+}

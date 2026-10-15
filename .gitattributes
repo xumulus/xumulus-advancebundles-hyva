@@ -7,3 +7,4 @@
 /dev              export-ignore
 /Test             export-ignore
 /phpunit.xml.dist export-ignore
+/.github          export-ignore
