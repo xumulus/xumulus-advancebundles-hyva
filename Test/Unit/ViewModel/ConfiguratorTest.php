@@ -43,19 +43,21 @@ class ConfiguratorTest extends TestCase
         $this->viewModel = new Configurator($this->assetRepository, $this->productPrice, new Json());
     }
 
-    public function testScriptsAreTheCoreInContractOrderThenTheAdapter(): void
+    public function testScriptsAreTheCoreInContractOrderInsideTheAmdGuardThenTheAdapter(): void
     {
         $this->assetRepository->method('getUrl')->willReturnCallback(static function (string $fileId): string {
             return 'https://example.test/static/' . str_replace('::', '/', $fileId);
         });
 
         self::assertSame([
+            'https://example.test/static/Xumulus_AdvanceBundlesHyva/js/amd-hide.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/state.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/price.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/validate.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/summary.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/dom.js',
             'https://example.test/static/Xumulus_AdvanceBundles/js/configurator/index.js',
+            'https://example.test/static/Xumulus_AdvanceBundlesHyva/js/amd-restore.js',
             'https://example.test/static/Xumulus_AdvanceBundlesHyva/js/configurator-hyva.js',
         ], $this->viewModel->getScriptUrls());
     }

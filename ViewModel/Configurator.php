@@ -24,15 +24,18 @@ class Configurator implements ArgumentInterface
 {
     /**
      * The configurator core of Xumulus_AdvanceBundles, in load order (docs/configurator-contract.md §1), then the
-     * Hyvä adapter.
+     * Hyvä adapter. amd-hide.js and amd-restore.js around the core make it create window.XabConfigurator even when
+     * an AMD loader is on the page (the core files are UMD).
      */
     public const SCRIPTS = [
+        'Xumulus_AdvanceBundlesHyva::js/amd-hide.js',
         'Xumulus_AdvanceBundles::js/configurator/state.js',
         'Xumulus_AdvanceBundles::js/configurator/price.js',
         'Xumulus_AdvanceBundles::js/configurator/validate.js',
         'Xumulus_AdvanceBundles::js/configurator/summary.js',
         'Xumulus_AdvanceBundles::js/configurator/dom.js',
         'Xumulus_AdvanceBundles::js/configurator/index.js',
+        'Xumulus_AdvanceBundlesHyva::js/amd-restore.js',
         'Xumulus_AdvanceBundlesHyva::js/configurator-hyva.js',
     ];
 

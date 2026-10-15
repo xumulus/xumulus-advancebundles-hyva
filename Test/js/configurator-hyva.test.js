@@ -141,3 +141,47 @@ test('start() warns and does nothing when there is no config', () => {
     assert.equal(warnings.length, 1);
     assert.match(warnings[0], /no configurator config found for #xab-root-2046/);
 });
+
+test('amd-hide.js / amd-restore.js: the core creates window.XabConfigurator although an AMD loader is on the page',
+    {skip: !fs.existsSync(CORE_DIR) && 'set XAB_CORE_DIR to the main module\'s js/configurator to run this'}, () => {
+        const vm = require('vm');
+        const js = path.resolve(__dirname, '../../view/frontend/web/js');
+        const anonymousDefines = [];
+        // RequireJS-like: an anonymous define() from a plain script is an error there.
+        const define = function () {
+            anonymousDefines.push(arguments);
+        };
+        const amd = {jQuery: true};
+
+        define.amd = amd;
+        const sandbox = {define};
+
+        sandbox.self = sandbox;
+        vm.createContext(sandbox);
+        const run = (file) => vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, {filename: file});
+
+        run(path.join(js, 'amd-hide.js'));
+        assert.equal(define.amd, undefined, 'hidden while the core runs');
+        ['state', 'price', 'validate', 'summary', 'dom', 'index'].forEach((name) => {
+            run(path.join(CORE_DIR, name + '.js'));
+        });
+        run(path.join(js, 'amd-restore.js'));
+
+        assert.equal(anonymousDefines.length, 0, 'no anonymous define()');
+        assert.equal(typeof sandbox.XabConfigurator.create, 'function');
+        assert.equal(define.amd, amd, 'define.amd is back');
+        assert.equal(sandbox.XabHyvaHiddenAmd, undefined);
+    });
+
+test('amd-hide.js / amd-restore.js do nothing without an AMD loader', () => {
+    const vm = require('vm');
+    const js = path.resolve(__dirname, '../../view/frontend/web/js');
+    const sandbox = {};
+
+    sandbox.self = sandbox;
+    vm.createContext(sandbox);
+    ['amd-hide.js', 'amd-restore.js'].forEach((file) => {
+        vm.runInContext(fs.readFileSync(path.join(js, file), 'utf8'), sandbox);
+    });
+    assert.deepEqual(Object.keys(sandbox).sort(), ['self']);
+});
