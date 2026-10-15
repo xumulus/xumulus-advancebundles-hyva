@@ -2,7 +2,6 @@
     "name": "xumulus/advancebundles-hyva",
     "description": "Hyvä Themes compatibility for Xumulus Advanced Bundles: the bundle configurator on Hyvä product pages (Alpine.js, Tailwind CSS, CSP safe).",
     "type": "magento2-module",
-    "version": "2.0.0",
     "license": "proprietary",
     "require": {
         "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0||~8.5.0",
