@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Hyvä replacement of Xumulus_AdvanceBundles::configurator/init.phtml (compat module fallback), rendered last inside
+ * the configurator root. Instead of Luma's x-magento-init it leaves the config (docs/configurator-contract.md §3)
+ * as JSON data for the Alpine component "xabConfigurator" (Xumulus_AdvanceBundlesHyva::hyva/configurator.phtml),
+ * with the price Hyvä's bundle price box starts from. Data only: no script runs here, so nothing needs a CSP hash.
+ *
+ * @var \Magento\Bundle\Block\Catalog\Product\View\Type\Bundle $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Hyva\Theme\Model\ViewModelRegistry $viewModels
+ * @var string $xabRootId id of the [data-xab-root] element
+ * @var \Xumulus\AdvanceBundles\ViewModel\Configurator $xabViewModel
+ */
+
+use Xumulus\AdvanceBundlesHyva\ViewModel\Configurator as HyvaConfigurator;
+
+/** @var HyvaConfigurator $hyvaConfigurator */
+$hyvaConfigurator = $viewModels->require(HyvaConfigurator::class);
+?>
+<script type="application/json"
+        data-xab-config
+        data-xab-hyva-prices="<?= $escaper->escapeHtmlAttr($hyvaConfigurator->getStartPricesJson($block->getProduct())) ?>"
+><?= /* @noEscape */ $xabViewModel->getConfigJson($block) ?></script>

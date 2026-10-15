@@ -1,0 +1,79 @@
+<?php
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Hyvä replacement of Xumulus_AdvanceBundles::configurator/summary.phtml (compat module fallback): the chosen items,
+ * rendered by the Hyvä adapter into [data-xab-role="summary"], then Hyvä's own bundle price box (driven by the
+ * configurator through the update-bundle-option-prices event), the qty field and the add-to-cart button.
+ *
+ * Only the children Hyvä's own bundle summary renders are output: the Luma "configured price" box
+ * (product.price.render.bundle.customization) is static on Hyvä and is left out. There is no summary-status live
+ * region either: Hyvä's price box announces the new price itself (aria-live).
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Xumulus\AdvanceBundles\ViewModel\Configurator $viewModel */
+$viewModel = $block->getData('view_model');
+$product = $block->getProduct();
+?>
+<?php if ($product->isSaleable() && $block->hasOptions()): ?>
+    <?php $summaryId = 'xab-summary-' . (int)$product->getId(); ?>
+    <div id="bundleSummary"
+         class="block-bundle-summary <?= $escaper->escapeHtmlAttr($viewModel->getSummaryClasses()) ?> xab-hyva-summary"
+         data-xab-summary="<?= (int)$product->getId() ?>">
+        <div class="xab-summary__inner">
+            <h2 class="xab-summary__title" id="<?= $escaper->escapeHtmlAttr($summaryId . '-title') ?>">
+                <?= $escaper->escapeHtml(__('Summary')) ?>
+            </h2>
+            <div class="xab-summary__body">
+                <?php /* Not a live region: it is rebuilt on every change. */ ?>
+                <div class="xab-summary__lines" data-xab-role="summary"></div>
+                <div class="xab-summary__errors" data-xab-summary-errors role="alert" hidden></div>
+                <div class="xab-summary__actions">
+                    <div class="xab-summary__price">
+                        <?= $block->getChildHtml('product.info.bundle.price') ?>
+                    </div>
+                    <div class="xab-summary__cart">
+                        <?= $block->getChildHtml('product.info.quantity') ?>
+                        <?= $block->getChildHtml('product.info.addtocart') ?>
+                    </div>
+                </div>
+                <?php if ($tierPriceHtml = $block->getChildHtml('product.price.tier')): ?>
+                    <div class="xab-summary__tier tier-price-container">
+                        <?= /* @noEscape */ $tierPriceHtml ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($shortcutHtml = $block->getChildHtml('addtocart.shortcut.buttons')): ?>
+                    <div class="xab-summary__shortcuts">
+                        <?= /* @noEscape */ $shortcutHtml ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if ($viewModel->isErrorPopupEnabled()): ?>
+            <dialog class="xab-dialog xab-dialog--errors" data-xab-error-dialog
+                    aria-labelledby="<?= $escaper->escapeHtmlAttr($summaryId . '-errors-title') ?>">
+                <div class="xab-dialog__header">
+                    <h2 class="xab-dialog__title" id="<?= $escaper->escapeHtmlAttr($summaryId . '-errors-title') ?>">
+                        <?= $escaper->escapeHtml($viewModel->getErrorPopupTitle()) ?>
+                    </h2>
+                    <button type="button" class="xab-dialog__close" data-xab-dialog-close
+                            title="<?= $escaper->escapeHtmlAttr(__('Close')) ?>">
+                        <span class="xab-visually-hidden"><?= $escaper->escapeHtml(__('Close')) ?></span>
+                    </button>
+                </div>
+                <div class="xab-dialog__body">
+                    <ul class="xab-dialog__errors" data-xab-error-list></ul>
+                </div>
+                <div class="xab-dialog__footer">
+                    <button type="button" class="btn btn-primary" data-xab-dialog-close>
+                        <?= $escaper->escapeHtml(__('Ok')) ?>
+                    </button>
+                </div>
+            </dialog>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

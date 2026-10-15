@@ -1,0 +1,37 @@
+<?php
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * The Alpine component around the bundle's product form (layout hyva_xumulus_advancebundles_configurator moves the
+ * form in here). It loads the configurator core of Xumulus_AdvanceBundles and the Hyvä adapter as deferred plain
+ * scripts (they run in document order, before Alpine's own module script); the adapter registers the component with
+ * Alpine.data() itself, which starts one configurator per [data-xab-root]. There is no inline script, so a strict
+ * Content Security Policy needs no hash or nonce for it ($hyvaCsp has nothing to register).
+ *
+ * The component sits outside the form on purpose: Hyvä defers Alpine components inside #product_addtocart_form
+ * until they scroll into view, and the configurator has to guard the add-to-cart submit from the start. Hyvä's
+ * price box and qty field inside the form are nested in this component, so Alpine starts them with it.
+ *
+ * @var \Magento\Catalog\Block\Product\View $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Hyva\Theme\Model\ViewModelRegistry $viewModels
+ */
+
+use Xumulus\AdvanceBundlesHyva\ViewModel\Configurator as HyvaConfigurator;
+
+/** @var HyvaConfigurator $hyvaConfigurator */
+$hyvaConfigurator = $viewModels->require(HyvaConfigurator::class);
+$product = $block->getProduct();
+$childHtml = $block->getChildHtml();
+?>
+<?php if ($product && $product->isSaleable()): ?>
+    <?php foreach ($hyvaConfigurator->getScriptUrls() as $scriptUrl): ?>
+        <script src="<?= $escaper->escapeUrl($scriptUrl) ?>" defer></script>
+    <?php endforeach; ?>
+    <div class="xab-hyva" x-data="xabConfigurator">
+        <?= /* @noEscape */ $childHtml ?>
+    </div>
+<?php else: ?>
+    <?= /* @noEscape */ $childHtml ?>
+<?php endif; ?>

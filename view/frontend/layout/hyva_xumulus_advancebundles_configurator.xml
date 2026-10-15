@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Hyvä: the bundle configurator of Xumulus_AdvanceBundles, for both bundle page layouts. Hyvä adds this hyva_
+ * handle wherever the main module's xumulus_advancebundles_configurator handle applies (product page and cart
+ * Edit), and only on a Hyvä theme.
+ *
+ * Hyvä renders the bundle options and summary below the product info, outside the product form, and gives each of
+ * its own inputs a form attribute. The configurator's inputs carry no form attribute (they post the names of
+ * docs/configurator-contract.md §6.2 as a plain form would), so here the form is moved around them instead:
+ *
+ *   product.info.options.wrapper.bottom
+ *     xab.hyva.configurator           the Alpine component "xabConfigurator" (templates/hyva/configurator.phtml)
+ *       product.info.form             #product_addtocart_form
+ *         product.info.options.wrapper   the bundle's own custom options, as before
+ *         xab.hyva.columns              options column and summary column
+ *           product.info.bundle.options   the configurator root (main module, compat overrides here)
+ *           bundle.summary                summary, Hyvä price box, qty and add to cart
+ *
+ * Hyvä's own bundle option UI (initBundleOptions) is not rendered: the main module's layout gives
+ * product.info.bundle.options the configurator template.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <attribute name="class" value="xab-hyva-page"/>
+        <referenceBlock name="product.info.options.wrapper.bottom">
+            <block class="Magento\Catalog\Block\Product\View"
+                   name="xab.hyva.configurator"
+                   template="Xumulus_AdvanceBundlesHyva::hyva/configurator.phtml"
+                   before="-"/>
+        </referenceBlock>
+        <referenceBlock name="product.info.form">
+            <container name="xab.hyva.columns" htmlTag="div" htmlClass="xab-hyva__columns" after="-"/>
+        </referenceBlock>
+        <move element="product.info.form" destination="xab.hyva.configurator"/>
+        <move element="product.info.bundle.options" destination="xab.hyva.columns"/>
+        <move element="bundle.summary" destination="xab.hyva.columns" after="product.info.bundle.options"/>
+    </body>
+</page>

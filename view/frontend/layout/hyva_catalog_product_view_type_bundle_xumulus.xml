@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Hyvä, "Xumulus Advanced Bundle Layout". The main module's handle rearranges Luma's page; on Hyvä the product
+ * info card and gallery stay, and this undoes what has no Hyvä counterpart:
+ *  - the Luma product info box (block productinfo: name, image and price above the options) is not used. Its price
+ *    box (product.info.price, which the main handle moves there) is left out too: on Hyvä it would be a static
+ *    price outside the form, while the summary's price box follows the configuration;
+ *  - the page title stays (the info box was the page's h1 on Luma);
+ *  - like on Luma, the Wish List and Compare links are not shown (Luma removes product.info.extrahint).
+ * The header block (headerblock, "Show Header") is kept above the page.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="product.info.price" remove="true"/>
+        <referenceBlock name="productinfo" remove="true"/>
+        <referenceBlock name="page.main.title" remove="false"/>
+        <referenceContainer name="product.info.additional.actions" remove="true"/>
+    </body>
+</page>

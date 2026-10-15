@@ -1,0 +1,22 @@
+<?php
+/**
+ * Copyright © Xumulus. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * Hyvä replacement of Xumulus_AdvanceBundles::product/view/details.phtml (compat module fallback). The main module's
+ * template renders Luma's tabs; on Hyvä the product sections stay Hyvä's own
+ * (Magento_Catalog::product/view/sections/product-sections.phtml of the theme), and are left out when the
+ * "Show Product Tab" setting hides them on bundles, as on Luma.
+ *
+ * @var \Magento\Catalog\Block\Product\View\Details $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+/** @var \Xumulus\AdvanceBundles\ViewModel\ProductTab $viewModel */
+$viewModel = $block->getData('advanced_bundles_tab');
+?>
+<?php if ($viewModel === null || $viewModel->shouldRenderDetails()): ?>
+    <?= /* @noEscape */ $block->fetchView(
+        $block->getTemplateFile('Magento_Catalog::product/view/sections/product-sections.phtml')
+    ) ?>
+<?php endif; ?>
