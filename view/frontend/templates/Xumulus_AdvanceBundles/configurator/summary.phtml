@@ -11,6 +11,9 @@
  * (product.price.render.bundle.customization) is static on Hyvä and is left out. There is no summary-status live
  * region either: Hyvä's price box announces the new price itself (aria-live).
  *
+ * data-xab-theme-slot marks the wrappers of the theme's own blocks (and their inline scripts), so tools such as the
+ * main module's e2e CSP check can tell them from the module's markup.
+ *
  * @var \Magento\Catalog\Block\Product\View $block
  * @var \Magento\Framework\Escaper $escaper
  */
@@ -33,21 +36,21 @@ $product = $block->getProduct();
                 <div class="xab-summary__lines" data-xab-role="summary"></div>
                 <div class="xab-summary__errors" data-xab-summary-errors role="alert" hidden></div>
                 <div class="xab-summary__actions">
-                    <div class="xab-summary__price">
+                    <div class="xab-summary__price" data-xab-theme-slot>
                         <?= $block->getChildHtml('product.info.bundle.price') ?>
                     </div>
-                    <div class="xab-summary__cart">
+                    <div class="xab-summary__cart" data-xab-theme-slot>
                         <?= $block->getChildHtml('product.info.quantity') ?>
                         <?= $block->getChildHtml('product.info.addtocart') ?>
                     </div>
                 </div>
                 <?php if ($tierPriceHtml = $block->getChildHtml('product.price.tier')): ?>
-                    <div class="xab-summary__tier tier-price-container">
+                    <div class="xab-summary__tier tier-price-container" data-xab-theme-slot>
                         <?= /* @noEscape */ $tierPriceHtml ?>
                     </div>
                 <?php endif; ?>
                 <?php if ($shortcutHtml = $block->getChildHtml('addtocart.shortcut.buttons')): ?>
-                    <div class="xab-summary__shortcuts">
+                    <div class="xab-summary__shortcuts" data-xab-theme-slot>
                         <?= /* @noEscape */ $shortcutHtml ?>
                     </div>
                 <?php endif; ?>
