@@ -22,8 +22,10 @@ Package `xumulus/advancebundles-hyva`, module `Xumulus_AdvanceBundlesHyva`.
 **Tested with** Hyvä 1.5.3 (theme module and default theme 1.5.3,
 compat-module-fallback 1.1.4, Tailwind CSS 4.3.1) on Magento 2.4.9 with
 PHP 8.5, in both bundle layouts, at 1280 px and 390 px. Earlier Hyvä versions
-(1.3.11 to 1.4.x) and Tailwind v3 themes are expected to work but have not been
-tested.
+(1.3.11 to 1.4.x) and Tailwind v3 themes have not been tested on a store. For
+Tailwind v3 only the style sheet build was checked: with this module's
+`tailwind.config.js` (which safelists every `.xab*` class), Tailwind 3.4.17
+keeps every rule of `tailwind-source.css`.
 
 ---
 
@@ -110,6 +112,14 @@ the others, so the option markup is the main module's
   (`Xumulus_AdvanceBundles::js/configurator/*.js`) and this module's adapter
   (`js/configurator-hyva.js`) load as deferred plain scripts. The adapter
   registers the Alpine component and starts one configurator per bundle.
+  If another module puts an AMD loader (`define.amd`, e.g. RequireJS) on Hyvä
+  pages, `js/amd-hide.js` and `js/amd-restore.js` hide it while the core loads,
+  so the core (UMD files) still creates `window.XabConfigurator`.
+- **Config.** The config is a `<script type="application/json"
+  data-xab-config>` element inside the options. With Magento's "Move JS code to
+  the bottom of the page" (`dev/js/move_script_to_bottom`) on, Magento moves it
+  to the end of the page; the adapter finds it there by the options' id
+  (`data-xab-config-for`).
 - **Styles.** `view/frontend/tailwind/tailwind-source.css`, merged into the
   theme's `styles.css` by `hyva-sources` (Tailwind v4) or
   `postcssImportHyvaModules` with `tailwind.config.js` (Tailwind v3).
